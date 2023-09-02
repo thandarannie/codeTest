@@ -2,7 +2,8 @@
     "private": true,
     "scripts": {
         "dev": "vite",
-        "build": "vite build && vite build --ssr"
+        "build": "vite build && vite build --ssr",
+        "watch": "vite build --watch"
     },
     "devDependencies": {
         "@inertiajs/vue3": "^1.0.0",
@@ -19,6 +20,7 @@
         "vue": "^3.2.41"
     },
     "dependencies": {
-        "@harv46/vue-table": "^0.0.6"
+        "@harv46/vue-table": "^0.0.6",
+        "vue-toastification": "^2.0.0-rc.5"
     }
 }

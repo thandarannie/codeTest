@@ -14,11 +14,17 @@ return new class extends Migration
     public function up()
     {
         Schema::create('patients', function (Blueprint $table) {
-            $table->string('uuid')->unique();
+            $table->id();
+            // $table->foreignId('township_id')
+            //         ->constrained('townships')
+            //         ->onDelete('cascade');
+            $table->unsignedBigInteger('township_id');
             $table->string('name')->nullable();
             $table->string('email')->unique()->nullable();
             $table->string('phone')->nullable();
             $table->integer('age')->nullable();
+            
+            $table->string('address')->nullable();
             $table->timestamps();
         });
     }

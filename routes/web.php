@@ -4,8 +4,11 @@ use Inertia\Inertia;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\RegionController;
 use App\Http\Controllers\PatientController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\DistrictController;
+use App\Http\Controllers\TownshipController;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -31,8 +34,15 @@ Route::middleware('auth')->group(function () {
     //for patients
     Route::get('/patient', [PatientController::class, 'index'])->name('patient');
 
-    /// questions
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    //for districts
+    Route::get('/basic-data/district', [DistrictController::class, 'index'])->name('district');
+    Route::post('/basic-data/district', [DistrictController::class, 'store'])->name('district.create');
+  
+    //for regions
+    Route::get('/basic-data/region', [RegionController::class, 'index'])->name('region');
+
+    //for townships
+    Route::get('/basic-data/township', [TownshipController::class, 'index'])->name('township');
 
     //for user profile
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

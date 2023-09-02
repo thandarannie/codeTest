@@ -6,12 +6,12 @@ use App\Models\Township;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class Patient extends Model
+class District extends Model
 {
     use HasFactory;
-
-    public function township()
+    
+    public function townships()
     {
-        return $this->belongsTo(Township::class);
+        return $this->hasMany(Township::class,'district_id','id');
     }
 }
