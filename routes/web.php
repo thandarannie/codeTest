@@ -49,7 +49,6 @@ Route::middleware('auth')->group(function () {
     Route::delete('/basic-data/region/destroy/{id}',[RegionController::class,'destroy'])->name('region.destroy');
 
     //for townships
-  
     Route::get('/basic-data/township', [TownshipController::class, 'index'])->name('township');
     Route::get('/basic-data/township/edit/{id}', [TownshipController::class, 'edit'])->name('township.edit');
     Route::put('/basic-data/township/update/{id}', [TownshipController::class, 'update'])->name('township.update');
