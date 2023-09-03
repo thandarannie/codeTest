@@ -40,7 +40,6 @@ const form = useForm({
     terms: false,
 });
 
-
 const submit = () => {
     form.post(route('user.register'), {
         preserveScroll: true,

@@ -13,7 +13,7 @@ import { useToast } from "vue-toastification";
 import "vue-toastification/dist/index.css";
 
 const props = defineProps({
-    district:{
+    region:{
         type:Object,
         default:({})
     }
@@ -21,19 +21,19 @@ const props = defineProps({
 const toast = useToast();
 
 const form = useForm({
-    name:props.district.name,
+    name:props.region.name,
 });
 
 const updateForm = () => {
 
-form.put('/basic-data/district/update/'+ props.district.id,{
+form.put('/basic-data/region/update/'+ props.region.id,{
     preserveScroll: true,
     onSuccess: () => {
             
             form.reset()
             form.clearErrors()
            
-            toast.info("District was updated successfully", {
+            toast.info("State/Region was updated successfully", {
                 timeout: 3000
             });
         },
@@ -53,7 +53,7 @@ const goBack = () => {
         <template #header>
             <div class="grid grid-cols-5 gap-1">
                 <div class="col-span-3 md:col-span-4">
-                    <h2 class="font-semibold text-xl text-gray-800 leading-tight">District Edit</h2>
+                    <h2 class="font-semibold text-xl text-gray-800 leading-tight">State/Region Edit</h2>
                 </div>
                 <div class="col-span-2 md:col-span-1 justify-end">
                     <button  @click="goBack" class=" inline-flex text-sm bg-blue-500 w-fit mr-3 hover:bg-blue-700 text-white font-bold py-1 px-4 rounded">
