@@ -12,7 +12,7 @@ class TownshipController extends Controller
 {
     public function index()
     {
-        $townships=Township::all();
+        $townships=Township::with(['region','district'])->get();
         $regions=Region::all();
         $districts=District::all();
         return Inertia::render('Township/TownshipIndex',[
@@ -26,13 +26,17 @@ class TownshipController extends Controller
     {
         $request->validate([
             'name' => 'required',
+            'region_id'=>'required',
+            'district_id'=>'required'
         ]);
         try {
-            $district=new District();
-            $district->name=$request->name;
-            if($district->save()){
+            $township=new Township();
+            $township->name=$request->name;
+            $township->region_id=$request->region_id;
+            $township->district_id=$request->district_id;
+            if($township->save()){
                 //return to_route('district')->with('success','District was created successfully');
-                return back()->with('success','District was created successfully');
+                return back()->with('success','Township was created successfully');
             }
 
         }catch (Exception $e) {
@@ -44,10 +48,14 @@ class TownshipController extends Controller
 
     public function edit($id)
     {
-        $district=District::where('id', $id)->first();
-            if($district){
-                return Inertia::render('District/DistrictEdit',[
-                    'district' => $district
+        $township=Township::where('id', $id)->first();
+        $regions=Region::all();
+        $districts=District::all();
+            if($township){
+                return Inertia::render('Township/TownshipEdit',[
+                    'township' => $township,
+                    'regions'=>$regions,
+                    'districts'=>$districts
                 ]);
 
             }else{
@@ -59,26 +67,28 @@ class TownshipController extends Controller
 
         $request->validate([
             'name' => 'required',
+            'region_id'=>'required',
+            'district_id'=>'required'
         ]);
 
      
-        $district= District::where('id', $id)->first();
+        $Township= Township::where('id', $id)->first();
        
-        if($district){
+        if($Township){
 
-            $district->name=$request->name;
-            $district->update();
+            $Township->name=$request->name;
+            $Township->update();
             
-            return to_route('district')->with('success','Updated successfully');
+            return to_route('township')->with('success','Updated successfully');
            
         }
 
     }
 
     public function destroy($id){
-            $district= District::where('id', $id)->delete();
-            if($district){
-                return back()->with('success','A district was deleted successfully');
+            $Township= Township::where('id', $id)->delete();
+            if($Township){
+                return back()->with('success','A Township was deleted successfully');
             }else{
                 abort(404);
             }

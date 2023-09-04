@@ -13,14 +13,18 @@ use App\Http\Controllers\TownshipController;
 Route::get('/', function () {
     return Inertia::render('Welcome', [
         'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
+        'canRegister' => Route::has('register')
     ]);
 })->middleware(['auth', 'verified']);
 
 
 Route::post('/user/register', [UserController::class, 'register'])->name('user.register');
+Route::post('/user/reset-password', [UserController::class, 'resetPassword'])->name('user.reset-password');
+Route::delete('/user/destroy/{id}',[UserController::class,'destroy'])->name('user.destroy');
+
+Route::get('/user/edit/{id}', [UserController::class, 'edit'])->name('user.edit');
+Route::put('/user/update/{id}', [UserController::class, 'update'])->name('user.update');
+
 
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
@@ -33,6 +37,10 @@ Route::middleware('auth')->group(function () {
 
     //for patients
     Route::get('/patient', [PatientController::class, 'index'])->name('patient');
+    Route::post('/patient', [PatientController::class, 'store'])->name('patient.create');
+    Route::get('/patient/edit/{id}', [PatientController::class, 'edit'])->name('patient.edit');
+    Route::put('/patient/update/{id}', [PatientController::class, 'update'])->name('patient.update');
+    Route::delete('/patient/destroy/{id}',[PatientController::class,'destroy'])->name('patient.destroy');
 
     //for districts
     Route::get('/basic-data/district', [DistrictController::class, 'index'])->name('district');
@@ -59,6 +67,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    //for export user
+    Route::get('/export-users',[UserController::class,'exportUsers'])->name('export-users');
+
 });
 
 require __DIR__.'/auth.php';

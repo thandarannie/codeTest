@@ -174,7 +174,7 @@ const deleteForm = (id) => {
                             </td>
                         </template>
                     </VueTable>
-                    </div>
+                </div>
             </div>
         </div>
     </AuthenticatedLayout>

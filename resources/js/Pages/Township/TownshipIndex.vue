@@ -17,7 +17,11 @@ const props = defineProps({
         type:Object,
         default:({})
     },
-    roles:{
+    districts:{
+        type:Object,
+        default:({})
+    },
+    townships:{
         type:Object,
         default:({})
     }
@@ -25,14 +29,15 @@ const props = defineProps({
 const toast = useToast();
 const addNewPopUp = ref(false)
 const header = ["ID", "Name","District","State/Region"]
-const keys=["id","name","district","region"]
+const keys=["id","name"]
 
-const data = props.regions;
+const data = props.townships;
 
 const form = useForm({
-    name: '',
-    terms: false,
-});
+    name:null,
+    region_id:null,
+    district_id:null,
+})
 
 const createForm = () => {
     form.post('/basic-data/township', {
@@ -42,7 +47,7 @@ const createForm = () => {
             form.reset()
             form.clearErrors()
            
-            toast.info("State/Region was created successfully", {
+            toast.info("Township was created successfully", {
                 timeout: 3000
             });
         },
@@ -64,7 +69,7 @@ const deleteForm = (id) => {
     })
     .then((willDelete) => {
         if (willDelete) {
-            form.delete(route('region.destroy', id), {
+            form.delete(route('township.destroy', id), {
                 preserveScroll: true,
                 onSuccess: () => {
                     location.reload()
@@ -81,15 +86,9 @@ const deleteForm = (id) => {
 
     <AuthenticatedLayout>
         <template #header>
-            <div class="flex max-w-md">
-          <select  class="px-5 py-2 block w-md text-gray-500 text-sm  border border-gray-400 bg-white focus:ring-blue-500 focus:border-blue-500 " style="border-radius: 4px;border: 1px solid #ddd"> 
-            <option value=" " selected>All</option>  
-            <option >hnuhdfghjnkjhgfdesrftgyhujk</option>
-          </select>
-      </div>
             <div class="grid grid-cols-5 gap-1">
                 <div class="col-span-3 md:col-span-4">
-                    <h2 class="font-semibold text-xl text-gray-800 leading-tight">State/Region</h2>
+                    <h2 class="font-semibold text-xl text-gray-800 leading-tight">Townships</h2>
                 </div>
                 <div class="col-span-2 md:col-span-1">
                     <button  @click="addNewPopUp = true" class=" inline-flex text-sm bg-blue-500 w-fit mr-3 hover:bg-blue-700 text-white font-bold py-1 px-4 rounded">
@@ -125,7 +124,33 @@ const deleteForm = (id) => {
                         </div>
                 <form @submit="createForm" class="mt-6 space-y-6">
                     <div>
-                        <InputLabel for="name" value="Name" />
+                        <InputLabel for="district" value="District" />
+
+                        <div >
+                            <select v-model="form.district_id" class="w-full px-5 py-2 block w-md text-gray-500 
+                                text-sm  border border-gray-400 bg-white
+                                focus:ring-blue-500 focus:border-blue-500 " 
+                                style="border-radius: 4px;border: 1px solid #ddd" required> 
+                                <option value="" disabled selected>Select District</option>  
+                                <option v-for="c in districts" :value="c.id">{{ c.name }}</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <InputLabel for="region" value="Region" />
+
+                        <div >
+                            <select v-model="form.region_id" class="w-full px-5 py-2 block w-md text-gray-500 
+                                text-sm  border border-gray-400 bg-white
+                                focus:ring-blue-500 focus:border-blue-500 " 
+                                style="border-radius: 4px;border: 1px solid #ddd" required> 
+                                <option value="" disabled selected>Select State/Region</option>  
+                                <option v-for="c in regions" :value="c.id">{{ c.name }}</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <InputLabel for="name" value="Township Name" />
 
                         <TextInput
                             id="name"
@@ -139,7 +164,7 @@ const deleteForm = (id) => {
 
                         <InputError class="mt-2" :message="form.errors.name" />
                     </div>
-
+                    
                     <div class="flex items-center justify-start mt-4">
                     
                         <button
@@ -156,16 +181,19 @@ const deleteForm = (id) => {
         <div class="py-12">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">      
                 <div>
-                    <VueTable :headers="header" :data="data" :keys="keys" >
+                    <!-- <VueTable :headers="header" :data="data" :keys="keys" > -->
+                        <VueTable :headers="header" :data="data" :keys="keys">
                         <template #th>
                             <th> Actions</th>
                         </template>
                         <template #td="{ item }">
+                            <td> {{ item.district.name }}</td>
+                            <td> {{ item.region.name }}</td>
                             <td class="flex">
                                 <!-- <DeleteIcon @click="deleteItem(item.id)" />
                                 <EditIcon @click="edit(item)" /> -->
                                 <div class="mt-2">
-                                    <Link :href="route('region.edit',item.id)" class=" inline-flex text-sm bg-green-500 w-fit mr-3 hover:bg-green-700 text-white font-bold py-1 px-4 rounded">
+                                    <Link :href="route('township.edit',item.id)" class=" inline-flex text-sm bg-green-500 w-fit mr-3 hover:bg-green-700 text-white font-bold py-1 px-4 rounded">
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
                                         </svg>

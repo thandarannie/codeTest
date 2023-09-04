@@ -38,12 +38,14 @@ const showingNavigationDropdown = ref(false);
                                 </NavLink>
                             </div>
                             <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
-                                <NavLink :href="route('user')" :active="route().current('user')">
+                                <NavLink :href="route('user')" :active="route().current('user') || 
+                                 $page.url.startsWith('/user')">
                                     Accounts
                                 </NavLink>
                             </div>
                             <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
-                                <NavLink :href="route('patient')" :active="route().current('patient')">
+                                <NavLink :href="route('patient')" :active="route().current('patient') || 
+                                 $page.url.startsWith('/patient')">
                                     Patients
                                 </NavLink>
                             </div>

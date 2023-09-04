@@ -13,15 +13,11 @@ import { useToast } from "vue-toastification";
 import "vue-toastification/dist/index.css";
 
 const props = defineProps({
-    regions:{
+    patient:{
         type:Object,
         default:({})
     },
-    districts:{
-        type:Object,
-        default:({})
-    },
-    township:{
+    townships:{
         type:Object,
         default:({})
     }
@@ -29,19 +25,23 @@ const props = defineProps({
 const toast = useToast();
 
 const form = useForm({
-    name:props.township.name,
+    name:props.patient.name,
+    phone:props.patient.phone,
+    township_id:props.patient.township_id,
+    age:props.patient.age,
+    address:props.patient.address,
 });
 
 const updateForm = () => {
 
-form.put('/basic-data/region/update/'+ props.region.id,{
+form.put('/patient/update/'+ props.patient.id,{
     preserveScroll: true,
     onSuccess: () => {
             
             form.reset()
             form.clearErrors()
            
-            toast.info("State/Region was updated successfully", {
+            toast.info("Patient data was updated successfully", {
                 timeout: 3000
             });
         },
@@ -55,13 +55,13 @@ const goBack = () => {
 </script>
 
 <template>
-    <Head title="User" />
+    <Head title="Patient" />
 
     <AuthenticatedLayout>
         <template #header>
             <div class="grid grid-cols-5 gap-1">
                 <div class="col-span-3 md:col-span-4">
-                    <h2 class="font-semibold text-xl text-gray-800 leading-tight">State/Region Edit</h2>
+                    <h2 class="font-semibold text-xl text-gray-800 leading-tight">Patient Data Edit</h2>
                 </div>
                 <div class="col-span-2 md:col-span-1 justify-end">
                     <button  @click="goBack" class=" inline-flex text-sm bg-blue-500 w-fit mr-3 hover:bg-blue-700 text-white font-bold py-1 px-4 rounded">
@@ -81,35 +81,7 @@ const goBack = () => {
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
                 <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
                     <form @submit.prevent="updateForm">
-                        <div >
-                        <InputLabel for="district" value="District" />
-
-                        <div >
-                            <select v-model="form.district_id" class="w-1/2
-                             px-5 py-2 block w-md text-gray-500 
-                                text-sm  border border-gray-400 bg-white
-                                focus:ring-blue-500 focus:border-blue-500 " 
-                                style="border-radius: 4px;border: 1px solid #ddd" required> 
-                                <option value="" disabled selected>Select District</option>  
-                                <option v-for="c in districts" :value="c.id">{{ c.name }}</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="mt-2">
-                        <InputLabel for="region" value="Region" />
-
-                        <div >
-                            <select v-model="form.region_id" class="w-1/2
-                             px-5 py-2 block w-md text-gray-500 
-                                text-sm  border border-gray-400 bg-white
-                                focus:ring-blue-500 focus:border-blue-500 " 
-                                style="border-radius: 4px;border: 1px solid #ddd" required> 
-                                <option value="" disabled selected>Select State/Region</option>  
-                                <option v-for="c in regions" :value="c.id">{{ c.name }}</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="mt-2">
+                    <div>
                         <InputLabel for="name" value="Name" />
 
                         <TextInput
@@ -124,6 +96,62 @@ const goBack = () => {
 
                         <InputError class="mt-2" :message="form.errors.name" />
                     </div>
+                    <div  class="mt-4">
+                        <InputLabel for="phone" value="Phone Number" />
+
+                        <TextInput
+                            id="phone"
+                            type="text"
+                            class="mt-1 block w-1/2"
+                            v-model="form.phone"
+                            required
+                            autofocus
+                            autocomplete="phone"
+                        />
+
+                        <InputError class="mt-2" :message="form.errors.phone" />
+                    </div>
+                    <div  class="mt-4">
+                        <InputLabel for="age" value="Age" />
+
+                        <TextInput
+                            id="age"
+                            type="text"
+                            class="mt-1 block w-1/2"
+                            v-model="form.age"
+                            required
+                            autofocus
+                            autocomplete="age"
+                        />
+
+                        <InputError class="mt-2" :message="form.errors.age" />
+                    </div>
+                    <div class="mt-4">
+                        <InputLabel for="township" value="Township" />
+                        <select v-model="form.township_id" class="w-1/2 px-5 py-2 block w-md  
+                            text-sm  border border-gray-400 bg-white
+                            focus:ring-blue-500 focus:border-blue-500 " 
+                            style="border-radius: 4px;border: 1px solid #ddd" required> 
+                            <option v-for="c in townships" :value="c.id">{{ c.name }}</option>
+                            
+                        </select>
+                    </div>
+                    <div  class="mt-4">
+                        <InputLabel for="address" value="Address" />
+
+                        <TextInput
+                            id="address"
+                            type="text"
+                            class="mt-1 block w-1/2"
+                            v-model="form.address"
+                            required
+                            autofocus
+                            autocomplete="address"
+                        />
+
+                        <InputError class="mt-2" :message="form.errors.address" />
+                    </div>
+                 
                     <div class="flex items-center justify-start mt-4">
                         <button
                             :type="submit" :class="{ 'opacity-25': form.processing }" :disabled="form.processing"
