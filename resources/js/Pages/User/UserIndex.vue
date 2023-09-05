@@ -293,7 +293,7 @@ const exportUsers = () => {
             <div class="flex items-center justify-start mt-4">
             
                 <button
-                    :type="type" :class="{ 'opacity-25': form.processing }" :disabled="form.processing"
+                    :type="submit" :class="{ 'opacity-25': form.processing }" :disabled="form.processing"
                     class="inline-flex items-center px-6 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150"
                 >Add
                 </button>

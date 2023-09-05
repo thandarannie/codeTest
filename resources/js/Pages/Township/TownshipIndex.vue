@@ -148,7 +148,7 @@ const deleteForm = (id) => {
                             </svg>
                         </span>
                         </div>
-                <form @submit="createForm" class="mt-6 space-y-6">
+                <form @submit.prevent="createForm" class="mt-6 space-y-6">
                     <div>
                         <InputLabel for="district" value="District" />
 
