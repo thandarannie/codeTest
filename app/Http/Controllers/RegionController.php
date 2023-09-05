@@ -16,6 +16,11 @@ class RegionController extends Controller
 
     public function store(Request $request)
     {
+        if(Auth::user()->roles[0]->name=="Project Manager")
+        {
+            abort(401, 'This action is unauthorized.');
+        }
+
         $request->validate([
             'name' => 'required',
         ]);
@@ -34,6 +39,11 @@ class RegionController extends Controller
 
     public function edit($id)
     {
+        if(Auth::user()->roles[0]->name=="Project Manager")
+        {
+            abort(401, 'This action is unauthorized.');
+        }
+
         $region=Region::where('id', $id)->first();
             if($region){
                 return Inertia::render('Region/RegionEdit',[
@@ -45,8 +55,12 @@ class RegionController extends Controller
             }
     }
 
-    public function update(Request $request, $id){
-
+    public function update(Request $request, $id)
+    {
+        if(Auth::user()->roles[0]->name=="Project Manager")
+        {
+            abort(401, 'This action is unauthorized.');
+        }
         $request->validate([
             'name' => 'required',
         ]);
@@ -65,7 +79,12 @@ class RegionController extends Controller
 
     }
 
-    public function destroy($id){
+    public function destroy($id)
+    {
+        if(Auth::user()->roles[0]->name=="Project Manager")
+        {
+            abort(401, 'This action is unauthorized.');
+        }
             $region= Region::where('id', $id)->delete();
             if($region){
                 return back()->with('success','A region was deleted successfully');

@@ -21,6 +21,10 @@ const props = defineProps({
         type:Object,
         default:({})
     },
+    emails:{
+        type:Object,
+        default:({})
+    },
     roles:{
         type:Object,
         default:({})
@@ -29,16 +33,51 @@ const props = defineProps({
         type: Object,
         default: () => ({}),
     },
+    emailfilters: {
+        type: Object,
+        default: () => ({}),
+    },
+    rolefilters:{
+        type: Object,
+        default: () => ({}),
+    }
 });
 const data = props.users;
 const header = ["ID", "Name","Email","Password","Role"]
-const keys=["id","name","email","plain_password"]
+const keys=["id","name","email","password"]
 let search = ref(props.filters.search);
+let emailsearch=ref(props.emailfilters.search);
+let rolesearch=ref(props.rolefilters.search);
 
 watch(search, throttle((value) => {
+    console.log(value);
     router.get(
         "/user",
         { search: value },
+        {
+            preserveState: true,
+            replace: true,
+        }
+    );
+}, 1000));
+
+
+watch(emailsearch, throttle((value) => {
+   
+    router.get(
+        "/user",
+        { emailsearch: value },
+        {
+            preserveState: true,
+            replace: true,
+        }
+    );
+}, 1000));
+
+watch(rolesearch, throttle((value) => {
+    router.get(
+        "/user",
+        { rolesearch: value },
         {
             preserveState: true,
             replace: true,
@@ -57,6 +96,12 @@ const form = useForm({
     email: '',
     role:'',
     terms: false,
+});
+
+const exportform = useForm({
+    emailsearch: '',
+    namesearch:'',
+    rolesearch:'',
 });
 
 const pwdForm= useForm({
@@ -123,6 +168,41 @@ const deleteForm = (id) => {
     });
 }
 
+const exportData = () => {
+    swal({
+        title: "Export this data?",
+        icon: "warning",
+        buttons: true,
+        dangerMode: true,
+    })
+    .then((willDelete) => {
+        if (willDelete) {
+            exportform.emailsearch=emailsearch
+            exportform.namesearch=search
+            exportform.rolesearch=rolesearch
+            exportform.get('/export-users', {
+                preserveScroll: true,
+                onSuccess: () => {
+                    location.reload()
+                }
+            })
+        }
+    });
+}
+
+const exportUsers = () => {
+    exportform.emailsearch=emailsearch
+    exportform.namesearch=search
+    exportform.rolesearch=rolesearch
+    exportform.get('/export-users', {
+        preserveScroll: true,
+        onSuccess: () => {
+            location.reload()
+        }
+    })
+}
+
+
 </script>
 
 <template>
@@ -141,7 +221,8 @@ const deleteForm = (id) => {
                         </svg>
                         Add
                     </button>
-                    <a href="/export-users" class="inline-flex bg-red-500 text-sm w-fit hover:bg-red-700 text-white font-bold py-1 px-4 rounded">
+                   
+                    <a :href="'/export-users/'" class="inline-flex bg-red-500 text-sm w-fit hover:bg-red-700 text-white font-bold py-1 px-4 rounded">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M9 8.25H7.5a2.25 2.25 0 00-2.25 2.25v9a2.25 2.25 0 002.25 2.25h9a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25H15m0-3l-3-3m0 0l-3 3m3-3V15" />
                         </svg>
@@ -167,7 +248,7 @@ const deleteForm = (id) => {
                         </svg>
                     </span>
                     </div>
-            <form @submit="submit">
+            <form @submit.prevent="submit">
             <div>
                 <InputLabel for="name" value="Name" />
 
@@ -214,7 +295,7 @@ const deleteForm = (id) => {
                 <button
                     :type="type" :class="{ 'opacity-25': form.processing }" :disabled="form.processing"
                     class="inline-flex items-center px-6 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150"
-                >Register
+                >Add
                 </button>
             </div>
         </form>
@@ -236,7 +317,7 @@ const deleteForm = (id) => {
                         </svg>
                     </span>
                     </div>
-            <form @submit="passwordReset">
+            <form @submit.prevent="passwordReset">
           
             <div class="mt-4">
                 <input type="hidden" v-model="pwdForm.id" >
@@ -286,13 +367,33 @@ const deleteForm = (id) => {
                
                     <div class="mx-0 relative md:w-1/3 w-1/3 mb-3">
                         <TextInput id="search" type="text" v-model="search" 
-                        class="mt-1 block w-full text-sm py-1.5 px-2" placeholder="Search by name"/>
+                        class="w-full px-5 py-2 block w-md text-gray-500 
+                            text-sm  bg-white focus:ring-blue-500 
+                            focus:border-blue-500 " placeholder="Search by name"/>
                     
                     </div>
+                
                     <div class="ml-12 relative md:w-1/3 w-1/3 mb-3">
-                        <TextInput id="search" type="text" v-model="search" 
-                        class="mt-1 block w-full text-sm py-1.5 px-2" placeholder="Search by name"/>
-                    
+                        <select v-model="emailsearch" class="w-full px-5 py-2 block w-md text-gray-500 
+                            text-sm  border border-gray-400 bg-white 
+                            focus:ring-blue-500 rounded-xl focus:border-blue-500 " 
+                            style="border-radius: 4px;border: 1px solid #ddd" required> 
+                            <option value="" >Filter With Email</option>  
+                            <option v-for="c in emails" :value="c.email">
+                                {{ c.email }}
+                            </option>
+                        </select>
+                    </div>
+                    <div class="ml-12 relative md:w-1/3 w-1/3 mb-3">
+                        <select v-model="rolesearch" class="w-full px-5 py-2 block w-md text-gray-500 
+                            text-sm  border border-gray-400 bg-white rounded-xl
+                            focus:ring-blue-500 focus:border-blue-500 " 
+                            style="border-radius: 4px;border: 1px solid #ddd" required> 
+                            <option value="" selected>Filter Role</option>  
+                            <option v-for="c in roles" :value="c.id">
+                                {{ c.name }}
+                            </option>
+                        </select>
                     </div>
                  </div> 
             
@@ -309,7 +410,7 @@ const deleteForm = (id) => {
                                 </th>
                             
                                 <th scope="col" class="px-1 py-2  border border-gray-300">
-                            Email
+                                Email
                                 </th>
 
                                 <th scope="col" class="px-1 py-2  border border-gray-300">
@@ -320,7 +421,7 @@ const deleteForm = (id) => {
                                 Password
                                 </th>
                                 <th scope="col" class="px-1 py-2  border border-gray-300">
-                                Action
+                                Actions
                                 </th>
 
                             </tr>
@@ -345,10 +446,12 @@ const deleteForm = (id) => {
                                         {{  c.roles[0].name }} 
                                     </span>
                                 </td>
-
                                 <td class="text-left px-1 py-2 capitalize border border-gray-300">
-                                    <span v-if="c.plain_password===null">******</span>
-                                    {{ c.plain_password }}
+                                    <span v-if="c.plain_password==null">******</span>
+                                    <span v-if="c.plain_password!=null">
+                                        {{ c.plain_password }}
+                                    </span>
+                                    
                                 </td>
                                 <td class="text-left px-1 py-2 border border-gray-300">
                                     <div class="mt-2">
@@ -378,41 +481,6 @@ const deleteForm = (id) => {
                 </div>
                 <Pagination class="mt-3" :links="props.users.links"/>
 
-                <!-- <div>
-                    <VueTable :headers="header" :data="data" :keys="keys" >
-                        <template >
-                            <th> Actions</th>
-                        </template>
-                        <template>
-                            <td>
-                                <span  class="text-sm rounded-lg bg-yellow-300 text-gray-800 px-1 border-lg">
-                                    {{ item.roles[0].name }}
-                                </span>
-                            </td>
-                            <td class="flex">
-                                <div class="mt-2">
-                                    <button title="Password reset"   @click="passwordreset(item.id)" class=" inline-flex text-sm bg-gray-500 w-fit mr-3 hover:bg-gray-700 text-white font-bold py-1 px-4 rounded">
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 5.25a3 3 0 013 3m3 0a6 6 0 01-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1121.75 8.25z" />
-                                        </svg>
-                                        Password reset
-                                    </button>
-                                    <Link title="Edit" :href="route('user.edit',item.id)" class=" inline-flex text-sm bg-green-500 w-fit mr-3 hover:bg-green-700 text-white font-bold py-1 px-4 rounded">
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
-                                        </svg>
-                                    </Link>
-                                    <button @click="deleteForm(item.id)" title="Delete" class="bg-red-500 text-sm w-fit hover:bg-red-700 text-white font-bold py-1 px-4 rounded">
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
-                                        </svg>
-                                    </button>
-                                </div>
-                                    
-                            </td>
-                        </template>
-                    </VueTable>
-                </div> -->
             </div>
         </div>
     </AuthenticatedLayout>

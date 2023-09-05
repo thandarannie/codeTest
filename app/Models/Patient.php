@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class Patient extends Model
 {
     use HasFactory;
-
+    
     public function township()
     {
         return $this->belongsTo(Township::class);

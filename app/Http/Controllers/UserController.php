@@ -21,25 +21,46 @@ class UserController extends Controller
     public function index()
     {
         $users= User::query()
+                ->with(['roles'])
                 ->when(searchRequest::input('search'), function ($query, $search) 
                 {
                     $query->where('name', 'like', '%' . $search . '%');
                 })
-                    ->select('id','name','email','plain_password')
+                ->when(searchRequest::input('emailsearch'), function ($query, $emailsearch) 
+                {
+                    $query->where('email',$emailsearch);
+                })
+                ->when(searchRequest::input('rolesearch'), function ($query, $rolesearch) 
+                {
+                    $query->whereHas(
+                        'roles', function($q) use ($rolesearch){
+                            $q->where('id', $rolesearch);
+                        }
+                    );
+                })
+              
+                    ->select('id','name','email','password','plain_password')
                     ->orderBy('name','ASC')
-                    ->with(['roles'])
                     ->paginate(5);
-         
+       
         $roles=Role::all();
         return Inertia::render('User/UserIndex',[
             'roles'=> $roles,
             'users'=>$users,
+            'emails'=>User::get('email'),
             'filters' => searchRequest::only(['search']),
+            'emailfilters' => searchRequest::only(['emailsearch']),
+            'rolesearch' => searchRequest::only(['rolesearch']),
         ]);  
     }
 
     public function register(Request $request)
     {
+       
+        if(Auth::user()->roles[0]->name=="Project Manager")
+        {
+            abort(401, 'This action is unauthorized.');
+        }
         $this->validate($request, [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
@@ -51,6 +72,7 @@ class UserController extends Controller
         $User = new User();
         $User->name = $request->name;
         $User->email = $request->email;
+        $User->password=Hash::make($password);
         $User->plain_password=$password;
         $User->save();
         $User->assignRole($request->input('role'));
@@ -61,6 +83,10 @@ class UserController extends Controller
 
     public function resetPassword(Request $request)
     {
+        if(Auth::user()->roles[0]->name=="Project Manager")
+        {
+            abort(401, 'This action is unauthorized.');
+        }
         $this->validate($request, [
             'password' => ['required', 'string', 'min:8', 'confirmed'],
             'password_confirmation' => 'required','min:8',
@@ -74,6 +100,10 @@ class UserController extends Controller
 
     public function edit($id)
     {
+        if(Auth::user()->roles[0]->name=="Project Manager")
+        {
+            abort(401, 'This action is unauthorized.');
+        }
         $user=User::where('id', $id)->first();
             if($user){
                 return Inertia::render('User/UserEdit',[
@@ -85,7 +115,12 @@ class UserController extends Controller
             }
     }
 
-    public function update(Request $request, $id){
+    public function update(Request $request, $id)
+    {
+        if(Auth::user()->roles[0]->name=="Project Manager")
+        {
+            abort(401, 'This action is unauthorized.');
+        }
 
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
@@ -99,6 +134,7 @@ class UserController extends Controller
 
             $user->name=$request->name;
             $user->email=$request->email;
+            $user->plain_password=null;
             $user->update();
             
             return to_route('user')->with('success','Updated successfully');
@@ -107,11 +143,58 @@ class UserController extends Controller
 
     }
 
-    public function exportUsers(Request $request){
-        return Excel::download(new ExportUser, 'accounts.csv');
+    public function exportUsers()
+    {
+       
+        if(Auth::user()->roles[0]->name=="Project Manager")
+        {
+            abort(401, 'This action is unauthorized.');
+        }
+
+        return Excel::download(new ExportUser,'accounts.csv');
+        
+        // if($search!=null){
+          
+        //     $users=User::query()->with(['roles'])
+        //                 ->select('id','name','email','created_at')
+        //                 ->where(function ($query) use($search) 
+        //                 {
+        //                     $query->where('name', 'like', '%' . $search . '%');
+        //                 })
+        //                 ->orWhere(function ($query) use($search) 
+        //                 {
+        //                     $query->where('email', 'like', '%' . $search . '%');
+        //                 })->get();
+        // }
+      
+        
+       
+    }
+    
+    public function filter()
+{
+    $users = app(User::class)->newQuery();
+
+    if ( request()->has('search') && !empty(request()->get('search')) ) {
+        $search = request()->query('search');
+        $users->where(function ($query) use($search) {
+            $query->where('first_name', 'LIKE', "%{$search}%")
+                ->orWhere('last_name', 'LIKE', "%{$search}%")
+                ->orWhere('email', 'LIKE', "%{$search}%")
+                ->orWhere('mobile', 'LIKE', "%{$search}%");
+        });
     }
 
-    public function destroy($id){
+    return Excel::download(new FilterUserExport($users), 'filter.xlsx');
+}
+
+    public function destroy($id)
+    {
+        if(Auth::user()->roles[0]->name=="Project Manager")
+        {
+            abort(401, 'This action is unauthorized.');
+        }
+
         $user= User::where('id', $id)->delete();
         if($user){
             return back()->with('success','Account was deleted successfully');

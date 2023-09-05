@@ -19,9 +19,7 @@ return new class extends Migration
             $table->foreignId('district_id')
                     ->constrained('districts')
                     ->onDelete('cascade');
-            $table->foreignId('region_id')
-                    ->constrained('regions')
-                    ->onDelete('cascade');
+          
             $table->timestamps();
         });
     }

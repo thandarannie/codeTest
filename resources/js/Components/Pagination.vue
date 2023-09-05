@@ -17,7 +17,7 @@ const props = defineProps({
                 <Link v-else
                     class="mr-1 mb-1 md:px-4 px-2 md:py-3 py-1.5 text-sm leading-4 border rounded cursor-pointer 
                     focus:border-main focus:text-gray-300"
-                    :class="{ 'bg-white text-gray': link.active }" :href="link.url" v-html="link.label">
+                    :class="{ 'bg-gray-50 text-gray': link.active }" :href="link.url" v-html="link.label">
                 </Link>
             </template>
         </div>

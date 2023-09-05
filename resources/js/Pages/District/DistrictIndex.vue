@@ -13,24 +13,25 @@ import { useToast } from "vue-toastification";
 import swal from 'sweetalert';
 
 const props = defineProps({
-    districts:{
+    regions:{
         type:Object,
         default:({})
     },
-    roles:{
+    districts:{
         type:Object,
         default:({})
     }
 });
 const toast = useToast();
 const addNewPopUp = ref(false)
-const header = ["ID", "Name"]
+const header = ["ID","Name", "Region"]
 const keys=["id","name"]
 
 const data = props.districts;
 
 const form = useForm({
     name: '',
+    region_id:'',
     terms: false,
 });
 
@@ -119,6 +120,19 @@ const deleteForm = (id) => {
                         </div>
                 <form @submit="createForm" class="mt-6 space-y-6">
                     <div>
+                        <InputLabel for="region" value="Region" />
+
+                        <div >
+                            <select v-model="form.region_id" class="w-full px-5 py-2 block w-md text-gray-500 
+                                text-sm  border border-gray-400 bg-white
+                                focus:ring-blue-500 focus:border-blue-500 " 
+                                style="border-radius: 4px;border: 1px solid #ddd" required> 
+                                <option value="" disabled selected>Select State/Region</option>  
+                                <option v-for="c in regions" :value="c.id">{{ c.name }}</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
                         <InputLabel for="name" value="Name" />
 
                         <TextInput
@@ -155,6 +169,7 @@ const deleteForm = (id) => {
                             <th> Actions</th>
                         </template>
                         <template #td="{ item }">
+                            <td>{{item.region.name}}</td>
                             <td class="flex">
                                 <!-- <DeleteIcon @click="deleteItem(item.id)" />
                                 <EditIcon @click="edit(item)" /> -->

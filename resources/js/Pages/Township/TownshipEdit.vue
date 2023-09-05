@@ -13,10 +13,7 @@ import { useToast } from "vue-toastification";
 import "vue-toastification/dist/index.css";
 
 const props = defineProps({
-    regions:{
-        type:Object,
-        default:({})
-    },
+
     districts:{
         type:Object,
         default:({})
@@ -30,18 +27,20 @@ const toast = useToast();
 
 const form = useForm({
     name:props.township.name,
+    district_id:props.township.district_id
+    
 });
 
 const updateForm = () => {
 
-form.put('/basic-data/region/update/'+ props.region.id,{
+form.put('/basic-data/township/update/'+ props.township.id,{
     preserveScroll: true,
     onSuccess: () => {
             
             form.reset()
             form.clearErrors()
            
-            toast.info("State/Region was updated successfully", {
+            toast.info("Township was updated successfully", {
                 timeout: 3000
             });
         },
@@ -92,20 +91,6 @@ const goBack = () => {
                                 style="border-radius: 4px;border: 1px solid #ddd" required> 
                                 <option value="" disabled selected>Select District</option>  
                                 <option v-for="c in districts" :value="c.id">{{ c.name }}</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="mt-2">
-                        <InputLabel for="region" value="Region" />
-
-                        <div >
-                            <select v-model="form.region_id" class="w-1/2
-                             px-5 py-2 block w-md text-gray-500 
-                                text-sm  border border-gray-400 bg-white
-                                focus:ring-blue-500 focus:border-blue-500 " 
-                                style="border-radius: 4px;border: 1px solid #ddd" required> 
-                                <option value="" disabled selected>Select State/Region</option>  
-                                <option v-for="c in regions" :value="c.id">{{ c.name }}</option>
                             </select>
                         </div>
                     </div>

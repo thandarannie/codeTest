@@ -2,15 +2,16 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\District;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Region extends Model
 {
     use HasFactory;
 
-    public function townships()
+    public function districts()
     {
-        return $this->hasMany(Township::class,'region_id','id');
+        return $this->hasMany(District::class,'region_id','id');
     }
 }

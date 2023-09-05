@@ -11,16 +11,17 @@ class ExportUser implements FromCollection,WithHeadings
     /**
     * @return \Illuminate\Support\Collection
     */
+    
     public function headings():array{
         return [
-            'Id',
+            'id',
             'Name',
             'Email',
-            'Phone'
+            'Role'
         ];
     }
     public function collection()
     {
-        return User::select('id','name','email','phone')->get();
+        return User::select('id','name','email')->get();
     }
 }

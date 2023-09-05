@@ -7,35 +7,60 @@ use App\Models\Region;
 use App\Models\District;
 use App\Models\Township;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Request as searchRequest;
 
 class TownshipController extends Controller
 {
     public function index()
     {
-        $townships=Township::with(['region','district'])->get();
-        $regions=Region::all();
         $districts=District::all();
+
+        $townships=Township::query()
+                            ->with(['district'])
+                            ->when(searchRequest::input('search'), function ($query, $search) 
+                                {
+                                    $query->where('name', 'like', '%' . $search . '%');
+                                })
+                            ->when(searchRequest::input('districtsearch'), function ($query, $districtsearch) 
+                                {
+                                    $query->whereHas(
+                                        'district', function($q) use ($districtsearch){
+                                            $q->where('id', $districtsearch);
+                                        }
+                                    );
+                                })
+                            ->select('id','name','district_id')
+                            ->orderBy('name','ASC')
+                            ->paginate(5); 
+      
         return Inertia::render('Township/TownshipIndex',[
             'townships'=>$townships,
-            'regions'=>$regions,
-            'districts'=>$districts
+            'districts'=>$districts,
+            'filters' => searchRequest::only(['search']),
+            'districtfilters' => searchRequest::only(['districtsearch']),
         ]);  
     }
 
+
+
     public function store(Request $request)
     {
+        if(Auth::user()->roles[0]->name=="Project Manager")
+        {
+            abort(401, 'This action is unauthorized.');
+        }
+
         $request->validate([
             'name' => 'required',
-            'region_id'=>'required',
             'district_id'=>'required'
         ]);
         try {
             $township=new Township();
             $township->name=$request->name;
-            $township->region_id=$request->region_id;
             $township->district_id=$request->district_id;
             if($township->save()){
                 //return to_route('district')->with('success','District was created successfully');
+               
                 return back()->with('success','Township was created successfully');
             }
 
@@ -48,13 +73,16 @@ class TownshipController extends Controller
 
     public function edit($id)
     {
-        $township=Township::where('id', $id)->first();
-        $regions=Region::all();
+        if(Auth::user()->roles[0]->name=="Project Manager")
+        {
+            abort(401, 'This action is unauthorized.');
+        }
+
+        $township=Township::where('id', $id)->with(['district'])->first();
         $districts=District::all();
             if($township){
                 return Inertia::render('Township/TownshipEdit',[
                     'township' => $township,
-                    'regions'=>$regions,
                     'districts'=>$districts
                 ]);
 
@@ -63,11 +91,14 @@ class TownshipController extends Controller
             }
     }
 
-    public function update(Request $request, $id){
-
+    public function update(Request $request, $id)
+    {
+        if(Auth::user()->roles[0]->name=="Project Manager")
+        {
+            abort(401, 'This action is unauthorized.');
+        }
         $request->validate([
             'name' => 'required',
-            'region_id'=>'required',
             'district_id'=>'required'
         ]);
 
@@ -77,6 +108,8 @@ class TownshipController extends Controller
         if($Township){
 
             $Township->name=$request->name;
+            $Township->district_id=$request->district_id;
+            
             $Township->update();
             
             return to_route('township')->with('success','Updated successfully');
@@ -85,13 +118,19 @@ class TownshipController extends Controller
 
     }
 
-    public function destroy($id){
-            $Township= Township::where('id', $id)->delete();
-            if($Township){
-                return back()->with('success','A Township was deleted successfully');
-            }else{
-                abort(404);
-            }
+    public function destroy($id)
+    {
+        if(Auth::user()->roles[0]->name=="Project Manager")
+        {
+            abort(401, 'This action is unauthorized.');
+        }
+
+        $Township= Township::where('id', $id)->delete();
+        if($Township){
+            return back()->with('success','A Township was deleted successfully');
+        }else{
+            abort(404);
+        }
       
     }
 }
