@@ -7,6 +7,7 @@ use App\Models\Region;
 use App\Models\District;
 use App\Models\Township;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request as searchRequest;
 
 class TownshipController extends Controller

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Region;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Auth;
 class RegionController extends Controller
 {
     public function index()
