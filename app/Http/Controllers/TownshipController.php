@@ -42,8 +42,6 @@ class TownshipController extends Controller
         ]);  
     }
 
-
-
     public function store(Request $request)
     {
         if(Auth::user()->roles[0]->name=="Project Manager")

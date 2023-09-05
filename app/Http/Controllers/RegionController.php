@@ -6,6 +6,7 @@ use App\Models\Region;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Request as searchRequest;
 class RegionController extends Controller
 {
     public function index()

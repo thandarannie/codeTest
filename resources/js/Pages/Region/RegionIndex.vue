@@ -11,6 +11,8 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { useToast } from "vue-toastification";
 import swal from 'sweetalert';
+import throttle from "lodash/throttle";
+import Pagination from '@/Components/Pagination.vue';
 
 const props = defineProps({
     regions:{
@@ -77,7 +79,7 @@ const deleteForm = (id) => {
 </script>
 
 <template>
-    <Head title="User" />
+    <Head title="Region" />
 
     <AuthenticatedLayout>
         <template #header>

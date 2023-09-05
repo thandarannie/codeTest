@@ -8,16 +8,29 @@ use App\Models\Region;
 use App\Models\District;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Request as searchRequest;
 
 class DistrictController extends Controller
 {
      public function index()
     {
-        $districts=District::query()->with(['region'])->get();
         $regions=Region::all();
+
+        $districts=District::query()
+                    ->with(['region'])
+                    ->when(searchRequest::input('search'), function ($query, $search) 
+                        {
+                            $query->where('name', 'like', '%' . $search . '%');
+                        })
+                
+                    ->select('id','name','region_id')
+                    ->orderBy('name','ASC')
+                    ->paginate(5);   
+
         return Inertia::render('District/DistrictIndex',[
             'districts'=>$districts,
-            'regions'=>$regions
+            'regions'=>$regions,
+            'filters' => searchRequest::only(['search']),
         ]);  
     }
 
