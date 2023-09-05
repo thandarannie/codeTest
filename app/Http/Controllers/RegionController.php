@@ -11,9 +11,18 @@ class RegionController extends Controller
 {
     public function index()
     {
-        $regions=Region::all();
+        $regions=Region::query()
+                ->when(searchRequest::input('search'), function ($query, $search) 
+                    {
+                        $query->where('name', 'like', '%' . $search . '%');
+                    })
+                ->select('id','name',)
+                ->orderBy('name','ASC')
+                ->paginate(5); 
+       
         return Inertia::render('Region/RegionIndex',[
-            'regions'=>$regions]); 
+            'regions'=>$regions,
+            'filters' => searchRequest::only(['search']),]); 
     }
 
     public function store(Request $request)

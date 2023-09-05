@@ -27,8 +27,13 @@ const props = defineProps({
         type: Object,
         default: () => ({}),
     },
+    regionfilters:{
+        type: Object,
+        default: () => ({}),
+    }
 });
 let search = ref(props.filters.search);
+let regionsearch= ref(props.filters.search);
 const toast = useToast();
 const addNewPopUp = ref(false)
 
@@ -50,6 +55,19 @@ watch(search, throttle((value) => {
         }
     );
 }, 1000));
+
+watch(regionsearch, throttle((value) => {
+    router.get(
+        "/basic-data/district",
+        { regionsearch: value },
+        {
+            preserveState: true,
+            replace: true,
+        }
+    );
+}, 1000));
+
+
 
 const createForm = () => {
     form.post('/basic-data/district', {
@@ -181,6 +199,17 @@ const deleteForm = (id) => {
                             text-sm  bg-white focus:ring-blue-500 
                             focus:border-blue-500 " placeholder="Search by District Name"/>
                     
+                    </div>
+                    <div class="ml-12 relative md:w-1/3 w-1/3 mb-3">
+                        <select v-model="regionsearch" class="w-full px-5 py-2 block w-md text-gray-500 
+                            text-sm  border border-gray-400 bg-white
+                            focus:ring-blue-500 rounded-xl focus:border-blue-500 " 
+                            style="border-radius: 4px;border: 1px solid #ddd" required> 
+                            <option value="" selected>Filter By Region</option>  
+                            <option v-for="c in regions" :value="c.id">
+                                {{ c.name }}
+                            </option>
+                        </select>
                     </div>
                    
                  </div> 

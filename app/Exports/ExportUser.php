@@ -17,11 +17,16 @@ class ExportUser implements FromCollection,WithHeadings
             'id',
             'Name',
             'Email',
-            'Role'
+            'Role',
+            'Date'
         ];
     }
     public function collection()
     {
-        return User::select('id','name','email')->get();
+        $users=  User::join('model_has_roles', 'users.id', '=', 'model_has_roles.model_id')
+                    ->join('roles', 'model_has_roles.role_id', '=', 'roles.id')
+                    ->select('users.id','users.name as username','users.email','roles.name','users.created_at')
+                    ->get();
+        return $users;
     }
 }

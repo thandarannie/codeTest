@@ -22,6 +22,14 @@ class DistrictController extends Controller
                         {
                             $query->where('name', 'like', '%' . $search . '%');
                         })
+                    ->when(searchRequest::input('regionsearch'), function ($query, $regionsearch) 
+                        {
+                            $query->whereHas(
+                                'region', function($q) use ($regionsearch){
+                                    $q->where('id', $regionsearch);
+                                }
+                            );
+                        })
                 
                     ->select('id','name','region_id')
                     ->orderBy('name','ASC')
@@ -31,6 +39,7 @@ class DistrictController extends Controller
             'districts'=>$districts,
             'regions'=>$regions,
             'filters' => searchRequest::only(['search']),
+            'regionfilters' => searchRequest::only(['regionsearch'])
         ]);  
     }
 
