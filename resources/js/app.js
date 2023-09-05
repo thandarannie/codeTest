@@ -8,7 +8,7 @@ import { ZiggyVue } from '../../vendor/tightenco/ziggy/dist/vue.m';
 import Toast from "vue-toastification";
 import "vue-toastification/dist/index.css";
 
-const appName = window.document.getElementsByTagName('title')[0];
+const appName = "Union";
 
 createInertiaApp({
     title: (title) => `${title} - ${appName}`,
