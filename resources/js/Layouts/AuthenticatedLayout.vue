@@ -49,16 +49,6 @@ const showingNavigationDropdown = ref(false);
                                     Patients
                                 </NavLink>
                             </div>
-                            <!-- <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
-                                <NavLink :href="route('region')" :active="route().current('district') || 
-                                 $page.url.startsWith('/basic-data') || 
-                                 route().current('region') || 
-                                 route().current('township')"
-                               >
-                                    Basic Data
-                                </NavLink>
-                            </div>  -->
-                            
                             <div class="hidden sm:flex space-x-8 sm:-my-px sm:items-center sm:ml-10">
                                 <!-- Settings Dropdown -->
                                 <div class="ml-3 relative">
@@ -174,8 +164,28 @@ const showingNavigationDropdown = ref(false);
                     class="sm:hidden"
                 >
                     <div class="pt-2 pb-3 space-y-1">
-                        <ResponsiveNavLink :href="route('dashboard')" :active="route().current('dashboard')">
+                        <ResponsiveNavLink href="/" :active="route().current('dashboard')">
                             Dashboard
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink :href="route('user')" :active="route().current('user') || 
+                                 $page.url.startsWith('/user')">
+                            Accounts
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink :href="route('patient')" :active="route().current('patient') || 
+                                 $page.url.startsWith('/patient')">
+                            Patients
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink :href="route('region')" :active="route().current('region') || 
+                                 $page.url.startsWith('/basic-data/region')">
+                            State/Region
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink :href="route('district')" :active="route().current('district') || 
+                                 $page.url.startsWith('/basic-data/district')">
+                           Districts
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink :href="route('township')" :active="route().current('township') || 
+                                 $page.url.startsWith('/basic-data/township')">
+                            Townships
                         </ResponsiveNavLink>
                     </div>
 

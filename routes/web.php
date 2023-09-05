@@ -10,12 +10,16 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DistrictController;
 use App\Http\Controllers\TownshipController;
 
-Route::get('/', function () {
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register')
-    ]);
-})->middleware(['auth', 'verified']);
+
+Route::get('/', [UserController::class, 'dashboard'])
+->middleware(['auth', 'verified'])->name('dashboard');
+
+// Route::get('/', function () {
+//     return Inertia::render('Welcome', [
+//         'canLogin' => Route::has('login'),
+//         'canRegister' => Route::has('register')
+//     ]);
+// })->middleware(['auth', 'verified']);
 
 
 Route::post('/user/register', [UserController::class, 'register'])->name('user.register');
@@ -26,9 +30,7 @@ Route::get('/user/edit/{id}', [UserController::class, 'edit'])->name('user.edit'
 Route::put('/user/update/{id}', [UserController::class, 'update'])->name('user.update');
 
 
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+
 
 Route::middleware('auth')->group(function () {
 

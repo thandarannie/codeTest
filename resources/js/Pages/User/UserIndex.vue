@@ -442,9 +442,22 @@ const exportUsers = () => {
                                 </td>
 
                                 <td class="text-left px-1 py-2 capitalize border border-gray-300">
-                                    <span  class="text-sm rounded-lg bg-yellow-300 text-gray-800 px-1 border-lg">
-                                        {{  c.roles[0].name }} 
-                                    </span>
+                                    <div v-if="c.roles[0].name=='Admin'">
+                                            <span class="text-sm rounded-lg bg-yellow-300 text-gray-800 px-1 border-lg">
+                                            {{  c.roles[0].name }} 
+                                        </span>
+                                    </div>
+                                    <div v-else-if="c.roles[0].name=='M&E Manager'">
+                                            <span class="text-sm rounded-lg bg-green-300 text-gray-800 px-1 border-lg">
+                                            {{  c.roles[0].name }} 
+                                        </span>
+                                    </div>
+                                    <div v-else="c.roles[0].name=='Project Manager'">
+                                            <span class="text-sm rounded-lg bg-blue-200 text-gray-800 px-1 border-lg">
+                                            {{  c.roles[0].name }} 
+                                        </span>
+                                    </div>
+                                    
                                 </td>
                                 <td class="text-left px-1 py-2 capitalize border border-gray-300">
                                     <span v-if="c.plain_password==null">******</span>

@@ -54,7 +54,7 @@ const goBack = () => {
 </script>
 
 <template>
-    <Head title="User" />
+    <Head title="Township" />
 
     <AuthenticatedLayout>
         <template #header>

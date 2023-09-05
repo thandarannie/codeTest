@@ -4,16 +4,18 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Inertia\Inertia;
+use App\Models\Patient;
+use App\Models\Township;
 use App\Exports\ExportUser;
-use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Request as searchRequest;
 
 class UserController extends Controller
@@ -54,6 +56,17 @@ class UserController extends Controller
         ]);  
     }
 
+    public function dashboard()
+    {
+        $users=User::all()->count();
+        $patients=Patient::all()->count();
+        $townships=Township::all()->count();
+      
+        return Inertia::render('Welcome',[
+            'users'=> $users,
+            'patients'=>$patients,
+            'townships'=>$townships]);
+    }
     public function register(Request $request)
     {
        
@@ -104,10 +117,12 @@ class UserController extends Controller
         {
             abort(401, 'This action is unauthorized.');
         }
-        $user=User::where('id', $id)->first();
+        $user=User::where('id', $id)->with(['roles'])->first();
+        $roles=Role::all();
             if($user){
                 return Inertia::render('User/UserEdit',[
-                    'user' => $user
+                    'user' => $user,
+                    'roles'=>$roles
                 ]);
 
             }else{
@@ -125,17 +140,20 @@ class UserController extends Controller
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255'],
+            'role'=>'required'
         ]);
 
      
         $user= User::where('id', $id)->first();
        
         if($user){
-
             $user->name=$request->name;
             $user->email=$request->email;
             $user->plain_password=null;
+            
             $user->update();
+            $user->roles()->detach();
+            $user->assignRole($request->role);
             
             return to_route('user')->with('success','Updated successfully');
            

@@ -112,7 +112,7 @@ const deleteForm = (id) => {
 </script>
 
 <template>
-    <Head title="User" />
+    <Head title="Patient" />
 
     <AuthenticatedLayout>
         <template #header>

@@ -16,6 +16,10 @@ const props = defineProps({
     user:{
         type:Object,
         default:({})
+    },
+    roles:{
+        type:Object,
+        default:({})
     }
 });
 const toast = useToast();
@@ -23,6 +27,7 @@ const toast = useToast();
 const form = useForm({
     name:props.user.name,
     email:props.user.email,
+    role:props.user.roles[0].name
 });
 
 const updateForm = () => {
@@ -103,9 +108,26 @@ const goBack = () => {
 
                         <InputError class="mt-2" :message="form.errors.email" />
                     </div>
+                    <div class="mt-2">
+                        <InputLabel for="role" value="Role (Required)" />
+                        <div  class="flex gap-2 mt-1 w-full items-center sm:text-sm text-xs">
+                            <div v-for="r in roles" class="flex gap-1 items-center">
+                               <div v-if="r.name==form.role" >
+                                <TextInput  type="radio" :value="r.id" v-model="form.role" name="role"
+                                checked></TextInput>
+                            </div>
+                            <div v-else>
+                                <TextInput  type="radio" :value="r.id" v-model="form.role" name="role"
+                                ></TextInput>
+                            </div>
+                                <span>{{r.name}}</span>
+                            </div>
+                        </div>
+                        <InputError class="mt-2" :message="form.errors.role" />
+                    </div>
                     <div class="flex items-center justify-start mt-4">
                         <button
-                            :type="submit" :class="{ 'opacity-25': form.processing }" :disabled="form.processing"
+                            :type="button" :class="{ 'opacity-25': form.processing }" :disabled="form.processing"
                             class="inline-flex items-center px-6 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150"
                         >Update
                         </button>
